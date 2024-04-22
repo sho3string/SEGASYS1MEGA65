@@ -70,7 +70,7 @@ entity main is
       dsw_b_i                 : in  std_logic_vector(7 downto 0);
 
       dn_clk_i                : in  std_logic;
-      dn_addr_i               : in  std_logic_vector(15 downto 0);
+      dn_addr_i               : in  std_logic_vector(17 downto 0);
       dn_data_i               : in  std_logic_vector(7 downto 0);
       dn_wr_i                 : in  std_logic;
 
@@ -135,9 +135,10 @@ constant m65_s             : integer := 13; --Service 1
 constant m65_capslock      : integer := 72; --Service Mode
 constant m65_help          : integer := 67; --Help key
 
-signal PCLK_EN             : std_logic;
-signal HPOS,VPOS           : std_logic_vector(8 downto 0);
-signal POUT                : std_logic_vector(7 downto 0);
+signal   PCLK_EN             : std_logic;
+signal   HPOS,VPOS           : std_logic_vector(8 downto 0);
+signal   POUT                : std_logic_vector(7 downto 0);
+signal   oRGB                : std_logic_vector(14 downto 0);
 
 begin
    
@@ -146,45 +147,61 @@ begin
     audio_right_o(15) <= not audio(15);
     audio_right_o(14 downto 0) <= signed(audio(14 downto 0));
    
-    options(0) <= osm_control_i(C_MENU_OSMPAUSE);
-    options(1) <= osm_control_i(C_MENU_OSMDIM);
+    options(0)  <= osm_control_i(C_MENU_OSMPAUSE);
+    options(1)  <= osm_control_i(C_MENU_OSMDIM);
     flip_screen <= osm_control_i(C_MENU_FLIP);
     
     PCLK_EN <=  video_ce_o;
+    oRGB    <=  video_blue_o & video_green_o & video_red_o & "0000000";
     
-    -- if pause_cpu is not asserted, it's safe to enter the service/test mode.
-    -- this prevents undesired state of the game when pause_cpu is asserted whilst self_test is enabled.
-
+    
+    i_hvgen : entity work.hvgen
+      port map (
+         HPOS       => HPOS,
+         VPOS       => VPOS,
+         CLK        => clk_main_i,
+         PCLK_EN    => PCLK_EN,
+         iRGB       => POUT,
+         oRGB       => oRGB,
+         HBLK       => video_hblank_o,
+         VBLK       => video_vblank_o,
+         HSYN       => video_hs_o,
+         VSYN       => video_vs_o,
+         H240       => '1',
+         HOFFS      => (others => '0'),
+         VOFFS      => (others => '0')  
+     );
+      
     i_GameCore : entity work.segasystem1
     port map (
     
     clk48M     => clk_main_i,
     reset      => reset,
     
-    INP0(0)    => not keyboard_n(m65_left_crsr), -- left
-    INP0(1)    => not keyboard_n(m65_horz_crsr), -- right
-    INP0(2)    => not keyboard_n(m65_up_crsr),   -- up
-    INP0(3)    => not keyboard_n(m65_vert_crsr), -- down
+    INP0(0)    => keyboard_n(m65_left_crsr), -- left
+    INP0(1)    => keyboard_n(m65_horz_crsr), -- right
+    INP0(2)    => keyboard_n(m65_up_crsr),   -- up
+    INP0(3)    => keyboard_n(m65_vert_crsr), -- down
     INP0(4)    => '0',
-    INP0(5)    => not keyboard_n(m65_mega),      -- trigger 2
-    INP0(6)    => not keyboard_n(m65_left_shift),-- trigger 1
+    INP0(5)    => keyboard_n(m65_mega),      -- trigger 2
+    INP0(6)    => keyboard_n(m65_left_shift),-- trigger 1
     INP0(7)    => '1',                           -- trigger 3
-    INP1(0)    => not keyboard_n(m65_left_crsr), -- left
-    INP1(1)    => not keyboard_n(m65_horz_crsr), -- right
-    INP1(2)    => not keyboard_n(m65_up_crsr),   -- up
-    INP1(3)    => not keyboard_n(m65_vert_crsr), -- down
+    INP1(0)    => keyboard_n(m65_left_crsr), -- left
+    INP1(1)    => keyboard_n(m65_horz_crsr), -- right
+    INP1(2)    => keyboard_n(m65_up_crsr),   -- up
+    INP1(3)    => keyboard_n(m65_vert_crsr), -- down
     INP1(4)    => '0',
-    INP1(5)    => not keyboard_n(m65_mega),      -- trigger 2
-    INP1(6)    => not keyboard_n(m65_left_shift),-- trigger 1
+    INP1(5)    => keyboard_n(m65_mega),      -- trigger 2
+    INP1(6)    => keyboard_n(m65_left_shift),-- trigger 1
     INP1(7)    => '1',                           -- trigger 3
     INP2(0)    => '1',  
     INP2(1)    => '1', 
-    INP2(2)    => not keyboard_n(m65_2),         -- start 2
-    INP2(3)    => not keyboard_n(m65_1),         -- start 1                           
+    INP2(2)    => keyboard_n(m65_2),         -- start 2
+    INP2(3)    => keyboard_n(m65_1),         -- start 1                           
     INP2(4)    => '1',                       
     INP2(5)    => '1',                       
     INP2(6)    => '1',                       
-    INP2(7)    => not keyboard_n(m65_5),         -- coin 
+    INP2(7)    => keyboard_n(m65_5),         -- coin 
     DSW0       => dsw_a_i,
     DSW1       => dsw_b_i,
     
@@ -193,8 +210,7 @@ begin
     PCLK_EN    => PCLK_EN,
     POUT       => POUT,
     SOUT       => audio,
-    
-    
+
     ROMCL      => dn_clk_i,
     ROMAD      => dn_addr_i,
     ROMDT      => dn_data_i,
@@ -205,9 +221,6 @@ begin
     HSDO       => hs_data_out,
     HSDI       => hs_data_in,
     HSWE       => hs_write_enable
-    
-    -- @TODO: ROM loading. For now we will hardcode the ROMs
-    -- No dynamic ROM loading as of yet
  
  );
 

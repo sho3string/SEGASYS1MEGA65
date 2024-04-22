@@ -158,9 +158,6 @@ architecture synthesis of MEGA65_Core is
 signal main_clk            : std_logic;               -- Core main clock
 signal main_rst            : std_logic;
 
-signal video_clk           : std_logic;               
-signal video_rst           : std_logic;
-
 ---------------------------------------------------------------------------------------------
 -- main_clk (MiSTer core's clock)
 ---------------------------------------------------------------------------------------------
@@ -244,6 +241,8 @@ signal dim_video    : std_logic;
 signal dsw_a_i      : std_logic_vector(7 downto 0);
 signal dsw_b_i      : std_logic_vector(7 downto 0);
 
+signal old_clk      : std_logic;
+signal ce_vid       : std_logic;
 signal video_ce     : std_logic;
 signal video_red    : std_logic_vector(7 downto 0);
 signal video_green  : std_logic_vector(7 downto 0);
@@ -260,8 +259,8 @@ signal ddram_data       : std_logic_vector(63 downto 0);
 signal ddram_be         : std_logic_vector( 7 downto 0);
 signal ddram_we         : std_logic;
 
--- ROM devices for Galaga
-signal qnice_dn_addr    : std_logic_vector(15 downto 0);
+-- ROM devices for Wonderboy
+signal qnice_dn_addr    : std_logic_vector(17 downto 0);
 signal qnice_dn_data    : std_logic_vector(7 downto 0);
 signal qnice_dn_wr      : std_logic;
 
@@ -282,18 +281,15 @@ begin
          sys_rstn_i        => RESET_M2M_N,     -- Asynchronous, asserted low
          
          main_clk_o        => main_clk,        -- Galaga's 18 MHz main clock
-         main_rst_o        => main_rst,        -- Galaga's reset, synchronized
-         
-         video_clk_o       => video_clk,       -- video clock 48 MHz
-         video_rst_o       => video_rst        -- video reset, synchronized
+         main_rst_o        => main_rst         -- Galaga's reset, synchronized
       
-      ); -- clk_gen
+      ); 
       
  
    main_clk_o       <= main_clk;
    main_rst_o       <= main_rst;
-   video_clk_o      <= video_clk;
-   video_rst_o      <= video_rst;
+   video_clk_o      <= main_clk;
+   video_rst_o      <= main_rst;
    
    video_red_o      <= video_red;
    video_green_o    <= video_green;
@@ -403,20 +399,21 @@ begin
          osm_control_i        => main_osm_control_i,
          dsw_a_i              => dsw_a_i,
          dsw_b_i              => dsw_b_i
-      ); -- i_main
-
-    process (video_clk) -- 48 MHz
+      );
+ 
+    process (main_clk) -- 48.4 MHz
     begin
-        if rising_edge(video_clk) then
+        if rising_edge(main_clk) then
+
             video_ce       <= '0';
             video_ce_ovl_o <= '0';
-
+            
             div <= std_logic_vector(unsigned(div) + 1);
             if div="000" then
-               video_ce <= '1'; -- 6 MHz
+               video_ce <= '1'; -- 6.05 MHz
             end if;
             if div(0) = '1' then
-               video_ce_ovl_o <= '1'; -- 24 MHz
+               video_ce_ovl_o <= '1'; -- 24.2 MHz
             end if;
 
             if dim_video = '1' then
@@ -432,8 +429,8 @@ begin
 
             video_hs     <= not main_video_hs;
             video_vs     <= not main_video_vs;
-            video_hblank <= not main_video_hblank;
-            video_vblank <= not main_video_vblank;
+            video_hblank <= main_video_hblank;
+            video_vblank <= main_video_vblank;
             video_de     <= not (main_video_hblank or main_video_vblank);
         end if;
     end process;
@@ -544,77 +541,86 @@ begin
       qnice_dn_data    <= (others => '0');
 
       case qnice_dev_id_i is
-
-         when C_DEV_BOS_CPU_ROM1 =>
+        
+         -- 0x0000 - 0x7fff / 000000000000000000 - 000111111111111111
+         when C_DEV_WB_CPU_ROM1 =>  
               qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "00" & qnice_dev_addr_i(13 downto 0);   
+              qnice_dn_addr <= "000" & qnice_dev_addr_i(14 downto 0);   
               qnice_dn_data <= qnice_dev_data_i(7 downto 0);
-
-         when C_DEV_BOS_CPU_ROM2 =>
+           
+         -- 0x8000 - 0xbfff / 001000000000000000 - 001011111111111111
+         when C_DEV_WB_CPU_ROM2 =>
               qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "010" & qnice_dev_addr_i(12 downto 0);  
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0);
-
-         when C_DEV_BOS_CPU_ROM3 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "0110" & qnice_dev_addr_i(11 downto 0); 
+              qnice_dn_addr <= "0010" & qnice_dev_addr_i(13 downto 0); 
               qnice_dn_data <= qnice_dev_data_i(7 downto 0);
               
-         when C_DEV_BOS_GFX1 =>
+         /*when C_DEV_WB_CPU_ROM3 =>
               qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "0111" & qnice_dev_addr_i(11 downto 0); 
+              qnice_dn_addr <= "110" & qnice_dev_addr_i(14 downto 0); 
+              qnice_dn_data <= qnice_dev_data_i(7 downto 0); */
+              
+         -- 0xC000 - 0xdfff / 001101111111111111   
+         when C_DEV_WB_SND  =>
+              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
+              qnice_dn_addr <= "00110" & qnice_dev_addr_i(12 downto 0); 
               qnice_dn_data <= qnice_dev_data_i(7 downto 0);
               
-         when C_DEV_BOS_GFX2 =>
+         -- 0xe000 - 0xffff / 001111111111111111   
+         when C_DEV_WB_SND_1  =>
               qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "1000" & qnice_dev_addr_i(11 downto 0); 
+              qnice_dn_addr <= "00111" & qnice_dev_addr_i(12 downto 0); 
               qnice_dn_data <= qnice_dev_data_i(7 downto 0);
-             
-         when C_DEV_BOS_GFX3 =>
+          
+         when C_DEV_WB_TIL1 =>
               qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "11100101" & qnice_dev_addr_i(7 downto 0); 
+              qnice_dn_addr <= "10000" & qnice_dev_addr_i(12 downto 0); 
               qnice_dn_data <= qnice_dev_data_i(7 downto 0);
-
-         when C_DEV_BOS_SPC1 =>
+         
+         when C_DEV_WB_TIL2 =>
               qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "1010" & qnice_dev_addr_i(11 downto 0); 
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0); 
-              
-         when C_DEV_BOS_SPC2 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "1011" & qnice_dev_addr_i(11 downto 0); 
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0); 
-              
-         when C_DEV_BOS_SPC3 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "1100" & qnice_dev_addr_i(11 downto 0); 
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0); 
-              
-         when C_DEV_BOS_MCU1 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "11010" & qnice_dev_addr_i(10 downto 0); 
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0);
-
-         when C_DEV_BOS_MCU2 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "110110" & qnice_dev_addr_i(9 downto 0); 
+              qnice_dn_addr <= "10001" & qnice_dev_addr_i(12 downto 0); 
               qnice_dn_data <= qnice_dev_data_i(7 downto 0);
               
-         when C_DEV_BOS_MCU3 =>
+         when C_DEV_WB_TIL3 =>
               qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "110111" & qnice_dev_addr_i(9 downto 0); 
+              qnice_dn_addr <= "10010" & qnice_dev_addr_i(12 downto 0); 
               qnice_dn_data <= qnice_dev_data_i(7 downto 0);
               
-         when C_DEV_BOS_MCU4 =>
+         when C_DEV_WB_TIL4 =>
               qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "111000" & qnice_dev_addr_i(9 downto 0); 
+              qnice_dn_addr <= "10011" & qnice_dev_addr_i(12 downto 0); 
               qnice_dn_data <= qnice_dev_data_i(7 downto 0);
               
-         when C_DEV_BOS_VIDC =>
+         when C_DEV_WB_TIL5 =>
               qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "11100100" & qnice_dev_addr_i(7 downto 0); 
+              qnice_dn_addr <= "10100" & qnice_dev_addr_i(12 downto 0); 
               qnice_dn_data <= qnice_dev_data_i(7 downto 0);
-
+              
+         when C_DEV_WB_TIL6 =>
+              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
+              qnice_dn_addr <= "10101" & qnice_dev_addr_i(12 downto 0); 
+              qnice_dn_data <= qnice_dev_data_i(7 downto 0);
+        
+        when C_DEV_WB_SPR1 =>
+              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
+              qnice_dn_addr <= "01" & qnice_dev_addr_i(15 downto 0); 
+              qnice_dn_data <= qnice_dev_data_i(7 downto 0);
+      
+         when C_DEV_WB_PROM => 
+              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
+              qnice_dn_addr <= "1011000000" & qnice_dev_addr_i(7 downto 0); 
+              qnice_dn_data <= qnice_dev_data_i(7 downto 0);   
+              
+         when C_DEV_WB_XTBL =>
+              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
+              qnice_dn_addr <= "10110000010" & qnice_dev_addr_i(6 downto 0); 
+              qnice_dn_data <= qnice_dev_data_i(7 downto 0);   
+              
+         when C_DEV_WB_STBL =>
+              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
+              qnice_dn_addr <= "10110000011" & qnice_dev_addr_i(6 downto 0); 
+              qnice_dn_data <= qnice_dev_data_i(7 downto 0);
+        
          when others => null;
       end case;
 

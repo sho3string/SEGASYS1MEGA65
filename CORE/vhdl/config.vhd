@@ -76,10 +76,10 @@ type WHS_RECORD_ARRAY_TYPE is array (0 to WHS_RECORDS - 1) of WHS_RECORD_TYPE;
 
 constant SCR_WELCOME : string :=
 
-   "Bosconian V0.5.0 (beta)\n" &
+   "Wonderboy V0.5.0 (beta)\n" &
    "-----------------------\n" &
    "\n" &
-   "MiSTer port done by Muse in 2023\n\n" &
+   "MiSTer port done by Muse in 2024\n\n" &
 
    -- We are not insisting. But it would be nice if you gave us credit for MiSTer2MEGA65 by leaving these lines in
    "Powered by MiSTer2MEGA65 Ver 1.0\n"   &
@@ -185,8 +185,8 @@ constant SEL_CFG_FILE      : std_logic_vector(15 downto 0) := x"0101";
 
 -- START YOUR CONFIGURATION BELOW THIS LINE
 
-constant DIR_START         : string := "/arcade/bosconian";
-constant CFG_FILE          : string := "/arcade/bosconian/boscfg";
+constant DIR_START         : string := "/arcade/wboy";
+constant CFG_FILE          : string := "/arcade/wboy/ wbcfg";
 
 --------------------------------------------------------------------------------------------------------------------
 -- General configuration settings: Reset, Pause, OSD behavior, Ascal, etc. (Selector 0x0110)
@@ -331,7 +331,7 @@ constant OPTM_DX           : natural := 23;
 constant OPTM_DY           : natural := 21;
 
 constant OPTM_ITEMS        : string :=
-   " Bosconian\n"           &
+   " Wonderboy\n"           &
    "\n"                     &
    " Pause when OSD open\n" &
    " Dim Video after 10s\n" &
