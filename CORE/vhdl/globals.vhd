@@ -161,9 +161,8 @@ constant C_DEV_WB_STBL               : std_logic_vector(15 downto 0) := x"010D";
 
 
 
-constant ROM1_MAIN1_CPU_ROM           : string  := "arcade/wboy/rom1.bin" & ENDSTR;       -- z80 cpu 16kb
-constant ROM2_MAIN2_CPU_ROM           : string  := "arcade/wboy/epr-7491.96"  & ENDSTR;   -- z80 cpu 16kb
---constant ROM3_MAIN3_CPU_ROM           : string  := "arcade/wboy/decr.bin"  & ENDSTR;      -- z80 cpu 32kb
+constant ROM1_MAIN1_CPU_ROM           : string  := "arcade/wboy/rom1.bin" & ENDSTR;       -- z80 cpu 32kb -- encrypted
+constant ROM2_MAIN2_CPU_ROM           : string  := "arcade/wboy/epr-7491.96"  & ENDSTR;   -- z80 cpu 16kb -- non encrypted
 constant ROM1_SND_CPU_ROM             : string  := "arcade/wboy/epr-7498.120" & ENDSTR;   -- z80 snd cpu
 constant ROM1_SND_CPU_ROM_1           : string  := "arcade/wboy/epr-7498.120" & ENDSTR;   -- z80 snd cpu
 constant SPR_01_ROM                   : string  := "arcade/wboy/sprites.bin" & ENDSTR;    -- sprites 64kb
@@ -174,13 +173,12 @@ constant TILE_04_ROM                  : string  := "arcade/wboy/epr-7496.61" & E
 constant TILE_05_ROM                  : string  := "arcade/wboy/epr-7494.63" & ENDSTR;    -- tiles
 constant TILE_06_ROM                  : string  := "arcade/wboy/epr-7492.65" & ENDSTR;    -- tiles
 constant LOOKUP_PROM                  : string  := "arcade/wboy/pr-5317.76" & ENDSTR;     -- lookup proms
-constant XOR_TABLE                    : string  := "arcade/wboy/xortable.bin" & ENDSTR;   -- xor table
-constant SWP_TABLE                    : string  := "arcade/wboy/swptable.bin" & ENDSTR;   -- swap table
+constant XOR_TABLE                    : string  := "arcade/wboy/xortable.bin" & ENDSTR;   -- xor table    -- 128 bytes
+constant SWP_TABLE                    : string  := "arcade/wboy/swptable.bin" & ENDSTR;   -- swap table   -- 128 bytes
 
 
 constant CPU_ROM1_MAIN_START          : std_logic_vector(15 downto 0) := X"0000";
 constant CPU_ROM2_MAIN_START          : std_logic_vector(15 downto 0) := CPU_ROM1_MAIN_START + ROM1_MAIN1_CPU_ROM'length;
---constant CPU_ROM3_MAIN_START          : std_logic_vector(15 downto 0) := CPU_ROM2_MAIN_START + ROM2_MAIN2_CPU_ROM'length;
 constant SND_CPU_MAIN_START           : std_logic_vector(15 downto 0) := CPU_ROM2_MAIN_START + ROM2_MAIN2_CPU_ROM'length;
 constant SND_CPU_MAIN_START_1         : std_logic_vector(15 downto 0) := SND_CPU_MAIN_START  + ROM1_SND_CPU_ROM'length;
 constant SPR1_MAIN_START              : std_logic_vector(15 downto 0) := SND_CPU_MAIN_START_1+ ROM1_SND_CPU_ROM_1'length;
@@ -197,7 +195,7 @@ constant SWP_MAIN_START               : std_logic_vector(15 downto 0) := XOR_MAI
 
 -- M2M framework constants
 constant C_CRTROMS_AUTO_NUM      : natural := 14; -- Amount of automatically loadable ROMs and carts, if more than 3: also adjust CRTROM_MAN_MAX in M2M/rom/shell_vars.asm, Needs to be in sync with config.vhd. Maximum is 16
-constant C_CRTROMS_AUTO_NAMES    : string  := ROM1_MAIN1_CPU_ROM & ROM2_MAIN2_CPU_ROM & --& ROM3_MAIN3_CPU_ROM &
+constant C_CRTROMS_AUTO_NAMES    : string  := ROM1_MAIN1_CPU_ROM & ROM2_MAIN2_CPU_ROM &
                                               ROM1_SND_CPU_ROM & ROM1_SND_CPU_ROM_1 &
                                               SPR_01_ROM &
                                               TILE_01_ROM & TILE_02_ROM & TILE_03_ROM & TILE_04_ROM & TILE_05_ROM & TILE_06_ROM &
@@ -208,7 +206,6 @@ constant C_CRTROMS_AUTO_NAMES    : string  := ROM1_MAIN1_CPU_ROM & ROM2_MAIN2_CP
 constant C_CRTROMS_AUTO          : crtrom_buf_array := ( 
       C_CRTROMTYPE_DEVICE, C_DEV_WB_CPU_ROM1, C_CRTROMTYPE_MANDATORY, CPU_ROM1_MAIN_START,
       C_CRTROMTYPE_DEVICE, C_DEV_WB_CPU_ROM2, C_CRTROMTYPE_MANDATORY, CPU_ROM2_MAIN_START,
-      --C_CRTROMTYPE_DEVICE, C_DEV_WB_CPU_ROM3, C_CRTROMTYPE_MANDATORY, CPU_ROM3_MAIN_START,
       C_CRTROMTYPE_DEVICE, C_DEV_WB_SND,      C_CRTROMTYPE_MANDATORY, SND_CPU_MAIN_START,
       C_CRTROMTYPE_DEVICE, C_DEV_WB_SND_1,    C_CRTROMTYPE_MANDATORY, SND_CPU_MAIN_START_1,
       C_CRTROMTYPE_DEVICE, C_DEV_WB_SPR1,     C_CRTROMTYPE_MANDATORY, SPR1_MAIN_START,
