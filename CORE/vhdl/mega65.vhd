@@ -24,8 +24,8 @@ port (
    RESET_M2M_N             : in  std_logic;              -- Debounced system reset in system clock domain
 
    -- Share clock and reset with the framework
-   main_clk_o              : out std_logic;              -- Galaga's 18 MHz main clock
-   main_rst_o              : out std_logic;              -- Galaga's reset, synchronized
+   main_clk_o              : out std_logic;              -- Wonderboy's main clock
+   main_rst_o              : out std_logic;              -- Wonderboy's reset, synchronized
    
    video_clk_o             : out std_logic;              -- video clock 48 MHz
    video_rst_o             : out std_logic;              -- video reset, synchronized
@@ -162,7 +162,7 @@ signal main_rst            : std_logic;
 -- main_clk (MiSTer core's clock)
 ---------------------------------------------------------------------------------------------
 
--- Unprocessed video output from the Galaga core
+-- Unprocessed video output from the Wonderboy core
 signal main_video_red      : std_logic_vector(2 downto 0);   
 signal main_video_green    : std_logic_vector(2 downto 0);
 signal main_video_blue     : std_logic_vector(1 downto 0);
@@ -176,74 +176,44 @@ signal main_video_vblank   : std_logic;
 ---------------------------------------------------------------------------------------------
 
 constant C_MENU_OSMPAUSE      : natural := 2;  
-constant C_MENU_OSMDIM        : natural := 3;
-constant C_FLIP_JOYS          : natural := 4;
-constant C_MENU_CRT_EMULATION : natural := 8;
-constant C_MENU_HDMI_16_9_50  : natural := 12;
-constant C_MENU_HDMI_16_9_60  : natural := 13;
-constant C_MENU_HDMI_4_3_50   : natural := 14;
-constant C_MENU_HDMI_5_4_50   : natural := 15;
+constant C_FLIP_JOYS          : natural := 3;
+constant C_MENU_CRT_EMULATION : natural := 7;
+constant C_MENU_HDMI_16_9_50  : natural := 11;
+constant C_MENU_HDMI_16_9_60  : natural := 12;
+constant C_MENU_HDMI_4_3_50   : natural := 13;
+constant C_MENU_HDMI_5_4_50   : natural := 14;
 
-constant C_MENU_VGA_STD       : natural := 21;
-constant C_MENU_VGA_15KHZHSVS : natural := 25;
-constant C_MENU_VGA_15KHZCS   : natural := 26;
+constant C_MENU_VGA_STD       : natural := 20;
+constant C_MENU_VGA_15KHZHSVS : natural := 24;
+constant C_MENU_VGA_15KHZCS   : natural := 25;
 
-constant C_MENU_MIDWAY        : natural := 32;
-constant C_MENU_NAMCO         : natural := 33;
-
--- Midway DIPs
--- Dipswitch B
-constant C_MENU_MIDWAY_DSWB_0 : natural := 38;
-constant C_MENU_MIDWAY_DSWB_1 : natural := 39;
-constant C_MENU_MIDWAY_DSWB_2 : natural := 40;
-constant C_MENU_MIDWAY_DSWB_3 : natural := 41;
-constant C_MENU_MIDWAY_DSWB_4 : natural := 42;
-constant C_MENU_MIDWAY_DSWB_5 : natural := 43;
-constant C_MENU_MIDWAY_DSWB_6 : natural := 44;
-constant C_MENU_MIDWAY_DSWB_7 : natural := 45;
-
+-- SEGA DIPs
 -- Dipswitch A
-constant C_MENU_MIDWAY_DSWA_0 : natural := 47;
-constant C_MENU_MIDWAY_DSWA_1 : natural := 48;
-constant C_MENU_MIDWAY_DSWA_2 : natural := 49;
-constant C_MENU_MIDWAY_DSWA_3 : natural := 50;
-constant C_MENU_MIDWAY_DSWA_4 : natural := 51;
-constant C_MENU_MIDWAY_DSWA_5 : natural := 52;
-constant C_MENU_MIDWAY_DSWA_6 : natural := 53;
-constant C_MENU_MIDWAY_DSWA_7 : natural := 54;
+constant C_MENU_SEGAWB_DSWA_0 : natural := 52;
+constant C_MENU_SEGAWB_DSWA_1 : natural := 53;
+constant C_MENU_SEGAWB_DSWA_2 : natural := 54;
+constant C_MENU_SEGAWB_DSWA_3 : natural := 55;
+constant C_MENU_SEGAWB_DSWA_4 : natural := 56;
+constant C_MENU_SEGAWB_DSWA_5 : natural := 57;
+constant C_MENU_SEGAWB_DSWA_6 : natural := 58;
+constant C_MENU_SEGAWB_DSWA_7 : natural := 59;
+-- Dipswitch B 
+constant C_MENU_SEGAWB_DSWB_0 : natural := 61;
+constant C_MENU_SEGAWB_DSWB_1 : natural := 62;
+constant C_MENU_SEGAWB_DSWB_2 : natural := 63;
+constant C_MENU_SEGAWB_DSWB_3 : natural := 64;
+constant C_MENU_SEGAWB_DSWB_4 : natural := 65;
+constant C_MENU_SEGAWB_DSWB_5 : natural := 66;
+constant C_MENU_SEGAWB_DSWB_6 : natural := 67;
+constant C_MENU_SEGAWB_DSWB_7 : natural := 68;
 
-
--- Namco DIPs
--- Dipswitch B
-constant C_MENU_NAMCO_DSWB_0  : natural := 60;
-constant C_MENU_NAMCO_DSWB_1  : natural := 61;
-constant C_MENU_NAMCO_DSWB_2  : natural := 62;
-constant C_MENU_NAMCO_DSWB_3  : natural := 63;
-constant C_MENU_NAMCO_DSWB_4  : natural := 64;
-constant C_MENU_NAMCO_DSWB_5  : natural := 65;
-constant C_MENU_NAMCO_DSWB_6  : natural := 66;
-constant C_MENU_NAMCO_DSWB_7  : natural := 67;
-
--- Dipswitch A
-constant C_MENU_NAMCO_DSWA_0  : natural := 69;
-constant C_MENU_NAMCO_DSWA_1  : natural := 70;
-constant C_MENU_NAMCO_DSWA_2  : natural := 71;
-constant C_MENU_NAMCO_DSWA_3  : natural := 72;
-constant C_MENU_NAMCO_DSWA_4  : natural := 73;
-constant C_MENU_NAMCO_DSWA_5  : natural := 74;
-constant C_MENU_NAMCO_DSWA_6  : natural := 75;
-constant C_MENU_NAMCO_DSWA_7  : natural := 76;
-
-
--- Galaga specific video processing
+-- Wonderboy specific video processing
 signal div          : std_logic_vector(2 downto 0);
 signal dim_video    : std_logic;
 signal dsw_a_i      : std_logic_vector(7 downto 0);
 signal dsw_b_i      : std_logic_vector(7 downto 0);
 
 signal old_clk      : std_logic;
-signal ce_vid       : std_logic;
-signal video_ce     : std_logic;
 signal video_red    : std_logic_vector(7 downto 0);
 signal video_green  : std_logic_vector(7 downto 0);
 signal video_blue   : std_logic_vector(7 downto 0);
@@ -280,8 +250,8 @@ begin
          sys_clk_i         => CLK,             -- expects 100 MHz
          sys_rstn_i        => RESET_M2M_N,     -- Asynchronous, asserted low
          
-         main_clk_o        => main_clk,        -- Galaga's 18 MHz main clock
-         main_rst_o        => main_rst         -- Galaga's reset, synchronized
+         main_clk_o        => main_clk,        -- Wonderboy's main clock
+         main_rst_o        => main_rst         -- Wonderboy's reset, synchronized
       
       ); 
       
@@ -297,45 +267,25 @@ begin
    video_vs_o       <= video_vs;
    video_hs_o       <= video_hs;
    video_hblank_o   <= video_hblank;
-   video_vblank_o   <= video_vblank;
-   video_ce_o       <= video_ce;       
+   video_vblank_o   <= video_vblank;      
    
-   dsw_a_i <= main_osm_control_i(C_MENU_MIDWAY_DSWA_7) &
-              main_osm_control_i(C_MENU_MIDWAY_DSWA_6) &
-              main_osm_control_i(C_MENU_MIDWAY_DSWA_5) &
-              main_osm_control_i(C_MENU_MIDWAY_DSWA_4) &
-              main_osm_control_i(C_MENU_MIDWAY_DSWA_3) &
-              main_osm_control_i(C_MENU_MIDWAY_DSWA_2) &
-              main_osm_control_i(C_MENU_MIDWAY_DSWA_1) &
-              main_osm_control_i(C_MENU_MIDWAY_DSWA_0)  when main_osm_control_i(C_MENU_MIDWAY) = '1' else
+   dsw_a_i <= main_osm_control_i(C_MENU_SEGAWB_DSWA_7) &
+              main_osm_control_i(C_MENU_SEGAWB_DSWA_6) &
+              main_osm_control_i(C_MENU_SEGAWB_DSWA_5) &
+              main_osm_control_i(C_MENU_SEGAWB_DSWA_4) &
+              main_osm_control_i(C_MENU_SEGAWB_DSWA_3) &
+              main_osm_control_i(C_MENU_SEGAWB_DSWA_2) &
+              main_osm_control_i(C_MENU_SEGAWB_DSWA_1) &
+              main_osm_control_i(C_MENU_SEGAWB_DSWA_0);
                     
-              main_osm_control_i(C_MENU_NAMCO_DSWA_7) &
-              main_osm_control_i(C_MENU_NAMCO_DSWA_6) &
-              main_osm_control_i(C_MENU_NAMCO_DSWA_5) &
-              main_osm_control_i(C_MENU_NAMCO_DSWA_4) &
-              main_osm_control_i(C_MENU_NAMCO_DSWA_3) &
-              main_osm_control_i(C_MENU_NAMCO_DSWA_2) &
-              main_osm_control_i(C_MENU_NAMCO_DSWA_1) &
-              main_osm_control_i(C_MENU_NAMCO_DSWA_0);       
-   
-  dsw_b_i <=  main_osm_control_i(C_MENU_MIDWAY_DSWB_7) &
-              main_osm_control_i(C_MENU_MIDWAY_DSWB_6) &
-              main_osm_control_i(C_MENU_MIDWAY_DSWB_5) &
-              main_osm_control_i(C_MENU_MIDWAY_DSWB_4) &
-              main_osm_control_i(C_MENU_MIDWAY_DSWB_3) &
-              main_osm_control_i(C_MENU_MIDWAY_DSWB_2) &
-              main_osm_control_i(C_MENU_MIDWAY_DSWB_1) &
-              main_osm_control_i(C_MENU_MIDWAY_DSWB_0)  when main_osm_control_i(C_MENU_MIDWAY) = '1' else
-                    
-              main_osm_control_i(C_MENU_NAMCO_DSWB_7) &
-              main_osm_control_i(C_MENU_NAMCO_DSWB_6) &
-              main_osm_control_i(C_MENU_NAMCO_DSWB_5) &
-              main_osm_control_i(C_MENU_NAMCO_DSWB_4) &
-              main_osm_control_i(C_MENU_NAMCO_DSWB_3) &
-              main_osm_control_i(C_MENU_NAMCO_DSWB_2) &
-              main_osm_control_i(C_MENU_NAMCO_DSWB_1) &
-              main_osm_control_i(C_MENU_NAMCO_DSWB_0);   
-   
+   dsw_b_i <= main_osm_control_i(C_MENU_SEGAWB_DSWB_7) &
+              main_osm_control_i(C_MENU_SEGAWB_DSWB_6) &
+              main_osm_control_i(C_MENU_SEGAWB_DSWB_5) &
+              main_osm_control_i(C_MENU_SEGAWB_DSWB_4) &
+              main_osm_control_i(C_MENU_SEGAWB_DSWB_3) &
+              main_osm_control_i(C_MENU_SEGAWB_DSWB_2) &
+              main_osm_control_i(C_MENU_SEGAWB_DSWB_1) &
+              main_osm_control_i(C_MENU_SEGAWB_DSWB_0);
             
    ---------------------------------------------------------------------------------------------
    -- main_clk (MiSTer core's clock)
@@ -357,7 +307,7 @@ begin
          
          -- Video output
          -- This is PAL 720x576 @ 50 Hz (pixel clock 27 MHz), but synchronized to main_clk (54 MHz).
-         video_ce_o           => open,
+         video_ce_o           => video_ce_o,
          video_ce_ovl_o       => open,
          video_red_o          => main_video_red,
          video_green_o        => main_video_green,
@@ -405,27 +355,16 @@ begin
     begin
         if rising_edge(main_clk) then
 
-            video_ce       <= '0';
             video_ce_ovl_o <= '0';
             
             div <= std_logic_vector(unsigned(div) + 1);
-            if div="000" then
-               video_ce <= '1'; -- 6.05 MHz
-            end if;
             if div(0) = '1' then
                video_ce_ovl_o <= '1'; -- 24.2 MHz
             end if;
 
-            if dim_video = '1' then
-                video_red   <= "0" & main_video_red   & main_video_red   & main_video_red(2 downto 2);
-                video_green <= "0" & main_video_green & main_video_green & main_video_green(2 downto 2);
-                video_blue  <= "0" & main_video_blue  & main_video_blue  & main_video_blue & main_video_blue(1 downto 1);  
-            else
-                video_red   <= main_video_red   & main_video_red   & main_video_red(2 downto 1);
-                video_green <= main_video_green & main_video_green & main_video_green(2 downto 1);
-                video_blue  <= main_video_blue  & main_video_blue  & main_video_blue & main_video_blue;
-                
-            end if;
+            video_red   <= main_video_red   & main_video_red   & main_video_red(2 downto 1);
+            video_green <= main_video_green & main_video_green & main_video_green(2 downto 1);
+            video_blue  <= main_video_blue  & main_video_blue  & main_video_blue & main_video_blue;
 
             video_hs     <= not main_video_hs;
             video_vs     <= not main_video_vs;

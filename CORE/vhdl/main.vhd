@@ -99,7 +99,6 @@ signal audio             : std_logic_vector(15 downto 0);
 signal buttons           : std_logic_vector(1 downto 0);
 signal reset             : std_logic  := reset_hard_i or reset_soft_i;
 
-
 -- highscore system
 signal hs_address       : std_logic_vector(15 downto 0);
 signal hs_data_in       : std_logic_vector(7 downto 0);
@@ -109,10 +108,6 @@ signal hs_write_enable  : std_logic;
 signal hs_pause         : std_logic;
 signal options          : std_logic_vector(1 downto 0);
 signal self_test        : std_logic;
-
-constant C_MENU_OSMPAUSE     : natural := 2;
-constant C_MENU_OSMDIM       : natural := 3;
-constant C_MENU_FLIP         : natural := 9;
 
 -- Game player inputs
 constant m65_1             : integer := 56; --Player 1 Start
@@ -127,18 +122,37 @@ constant m65_left_crsr     : integer := 74; --Player left
 constant m65_horz_crsr     : integer := 2;  --Player right
 constant m65_left_shift    : integer := 15; --Trigger 1
 constant m65_mega          : integer := 61; --Trigger 2
-
-
--- Pause, credit button & test mode
 constant m65_p             : integer := 41; --Pause button
 constant m65_s             : integer := 13; --Service 1
-constant m65_capslock      : integer := 72; --Service Mode
+constant m65_d             : integer := 18; --Service Mode
 constant m65_help          : integer := 67; --Help key
 
-signal   PCLK_EN             : std_logic;
-signal   HPOS,VPOS           : std_logic_vector(8 downto 0);
-signal   POUT                : std_logic_vector(7 downto 0);
-signal   oRGB                : std_logic_vector(14 downto 0);
+-- Menu controls
+
+constant C_MENU_OSMPAUSE     : natural := 2;
+constant C_MENU_OSMDIM       : natural := 3;
+constant C_MENU_FLIP         : natural := 9;
+
+constant C_MENU_SEGAWB_H1  : integer := 32;
+constant C_MENU_SEGAWB_H2  : integer := 33;
+constant C_MENU_SEGAWB_H4  : integer := 34;
+constant C_MENU_SEGAWB_H8  : integer := 35;
+constant C_MENU_SEGAWB_H16 : integer := 36;
+
+constant C_MENU_SEGAWB_V1  : integer := 42;
+constant C_MENU_SEGAWB_V2  : integer := 43;
+constant C_MENU_SEGAWB_V4  : integer := 44;
+
+signal PCLK_EN             : std_logic;
+signal HPOS,VPOS           : std_logic_vector(8 downto 0);
+signal POUT                : std_logic_vector(7 downto 0);
+signal oRGB                : std_logic_vector(7 downto 0);
+signal HOFFS               : std_logic_vector(4 downto 0);
+signal VOFFS               : std_logic_vector(2 downto 0);
+
+-- pause related logic
+signal dim_video           : std_logic := '0';
+
 
 begin
    
@@ -150,9 +164,22 @@ begin
     options(0)  <= osm_control_i(C_MENU_OSMPAUSE);
     options(1)  <= osm_control_i(C_MENU_OSMDIM);
     flip_screen <= osm_control_i(C_MENU_FLIP);
+
+    -- video
+    PCLK_EN     <=  video_ce_o;
+    oRGB        <=  video_blue_o & video_green_o & video_red_o;
     
-    PCLK_EN <=  video_ce_o;
-    oRGB    <=  video_blue_o & video_green_o & video_red_o & "0000000";
+    -- video crt offsets
+    HOFFS <=   osm_control_i(C_MENU_SEGAWB_H16)  &
+               osm_control_i(C_MENU_SEGAWB_H8)   &
+               osm_control_i(C_MENU_SEGAWB_H4)   &
+               osm_control_i(C_MENU_SEGAWB_H2)   &
+               osm_control_i(C_MENU_SEGAWB_H1);
+               
+    VOFFS <=   osm_control_i(C_MENU_SEGAWB_V4)   &
+               osm_control_i(C_MENU_SEGAWB_V2)   &
+               osm_control_i(C_MENU_SEGAWB_V1);
+              
     
     
     i_hvgen : entity work.hvgen
@@ -167,9 +194,9 @@ begin
          VBLK       => video_vblank_o,
          HSYN       => video_hs_o,
          VSYN       => video_vs_o,
-         H240       => '1',
-         HOFFS      => (others => '0'),
-         VOFFS      => (others => '0')  
+         H240       => '0',
+         HOFFS      => "000"   & HOFFS,
+         VOFFS      => "00000" & VOFFS 
      );
       
     i_GameCore : entity work.segasystem1
@@ -178,32 +205,35 @@ begin
     clk48M     => clk_main_i,
     reset      => reset,
     
-    INP0(0)    => keyboard_n(m65_left_crsr), -- left
-    INP0(1)    => keyboard_n(m65_horz_crsr), -- right
-    INP0(2)    => keyboard_n(m65_up_crsr),   -- up
-    INP0(3)    => keyboard_n(m65_vert_crsr), -- down
-    INP0(4)    => '0',
-    INP0(5)    => keyboard_n(m65_mega),      -- trigger 2
-    INP0(6)    => keyboard_n(m65_left_shift),-- trigger 1
-    INP0(7)    => '1',                           -- trigger 3
-    INP1(0)    => keyboard_n(m65_left_crsr), -- left
-    INP1(1)    => keyboard_n(m65_horz_crsr), -- right
-    INP1(2)    => keyboard_n(m65_up_crsr),   -- up
-    INP1(3)    => keyboard_n(m65_vert_crsr), -- down
-    INP1(4)    => '0',
-    INP1(5)    => keyboard_n(m65_mega),      -- trigger 2
-    INP1(6)    => keyboard_n(m65_left_shift),-- trigger 1
-    INP1(7)    => '1',                           -- trigger 3
-    INP2(0)    => '1',  
-    INP2(1)    => '1', 
-    INP2(2)    => keyboard_n(m65_2),         -- start 2
-    INP2(3)    => keyboard_n(m65_1),         -- start 1                           
-    INP2(4)    => '1',                       
-    INP2(5)    => '1',                       
-    INP2(6)    => '1',                       
-    INP2(7)    => keyboard_n(m65_5),         -- coin 
-    DSW0       => dsw_a_i,
-    DSW1       => dsw_b_i,
+    INP0(7)    => keyboard_n(m65_left_crsr)  and joy_1_left_n_i, -- left
+    INP0(6)    => keyboard_n(m65_horz_crsr)  and joy_1_right_n_i,-- right      
+    INP0(5)    => keyboard_n(m65_up_crsr),                       -- up        
+    INP0(4)    => keyboard_n(m65_vert_crsr),                     -- down    
+    INP0(3)    => '1',
+    INP0(2)    => keyboard_n(m65_left_shift) and joy_1_up_n_i,   -- trigger 2
+    INP0(1)    => keyboard_n(m65_mega)       and joy_1_fire_n_i, -- trigger 1   
+    INP0(0)    => '1',                                           -- trigger 3
+    
+    INP1(7)    => keyboard_n(m65_left_crsr)  and joy_2_left_n_i,  -- left
+    INP1(6)    => keyboard_n(m65_horz_crsr)  and joy_2_right_n_i, -- right      
+    INP1(5)    => keyboard_n(m65_up_crsr),                        -- up        
+    INP1(4)    => keyboard_n(m65_vert_crsr),                      -- down    
+    INP1(3)    => '1',
+    INP1(2)    => keyboard_n(m65_left_shift) and joy_2_up_n_i,    -- trigger 2
+    INP1(1)    => keyboard_n(m65_mega)       and joy_2_fire_n_i,  -- trigger 1   
+    INP1(0)    => '1',                                            -- trigger 3
+   
+    INP2(7)    => '1',                       -- unknown
+    INP2(6)    => '1',                       -- unknown
+    INP2(5)    => keyboard_n(m65_2),         -- start 2
+    INP2(4)    => keyboard_n(m65_1),         -- start 1                           
+    INP2(3)    => keyboard_n(m65_s),         -- service button
+    INP2(2)    => keyboard_n(m65_d),         -- service mode
+    INP2(1)    => keyboard_n(m65_6),         -- coin 2
+    INP2(0)    => keyboard_n(m65_5),         -- coin 1
+    
+    DSW0       => not dsw_a_i,
+    DSW1       => not dsw_b_i,
     
     PH         => HPOS,
     PV         => VPOS,

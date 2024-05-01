@@ -41,9 +41,7 @@ constant QNICE_FIRMWARE           : string  := QNICE_FIRMWARE_M2M;
 -- then add all the clocks speeds here by adding more constants.
 ----------------------------------------------------------------------------------------------------------
 
--- Galaga core's clock speed
--- Actual clock is 18_432 Mhz ( see MAME driver - galaga.cpp ).
--- MiSTer uses 18Mhz
+-- Wonderboy core's clock speed
 constant CORE_CLK_SPEED       : natural := 48_400_000;   -- SEGASYSTEM1 CLOCK
 
 -- System clock speed (crystal that is driving the FPGA) and QNICE clock speed
@@ -58,7 +56,7 @@ constant QNICE_CLK_SPEED      : natural := 50_000_000;   -- a change here has de
 -- Rendering constants (in pixels)
 --    VGA_*   size of the core's target output post scandoubler
 --    FONT_*  size of one OSM character
-constant VGA_DX               : natural := 480;
+constant VGA_DX               : natural := 1024;
 constant VGA_DY               : natural := 448;
 constant FONT_FILE            : string  := "../font/Anikki-16x16-m2m.rom";
 constant FONT_DX              : natural := 16;
@@ -145,7 +143,6 @@ constant C_CRTROMS_MAN           : crtrom_buf_array := ( x"EEEE", x"EEEE",
 
 constant C_DEV_WB_CPU_ROM1           : std_logic_vector(15 downto 0) := x"0100";     -- CPU1 ROM 
 constant C_DEV_WB_CPU_ROM2           : std_logic_vector(15 downto 0) := x"0101";     -- CPU2 ROM 
---constant C_DEV_WB_CPU_ROM3           : std_logic_vector(15 downto 0) := x"0102";     -- CPU3 ROM 
 constant C_DEV_WB_SND                : std_logic_vector(15 downto 0) := x"0102";     -- SOUNDCPU
 constant C_DEV_WB_SND_1              : std_logic_vector(15 downto 0) := x"0103";     -- SOUNDCPU
 constant C_DEV_WB_SPR1               : std_logic_vector(15 downto 0) := x"0104";     -- SPRITES 1
