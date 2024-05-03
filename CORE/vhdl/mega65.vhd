@@ -493,11 +493,6 @@ begin
               qnice_dn_addr <= "0010" & qnice_dev_addr_i(13 downto 0); 
               qnice_dn_data <= qnice_dev_data_i(7 downto 0);
               
-         /*when C_DEV_WB_CPU_ROM3 =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "110" & qnice_dev_addr_i(14 downto 0); 
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0); */
-              
          -- 0xC000 - 0xdfff / 001101111111111111   
          when C_DEV_WB_SND  =>
               qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
