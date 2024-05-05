@@ -1,24 +1,23 @@
-Bosconian: Star Destroyer for MEGA65 
-====================================
+SEGASYS1MEGA65 ( Wonderboy ) for MEGA65 
+=======================================
 
-done in 2023 by Muse
+done in 2024 by Muse
 	* Muse       github.com/sho3string
 	* sy2002     github.com/sy2002     www.sy2002.de
     	* MJoergen   github.com/MJoergen
 
-BosconianMEGA65 is licensed under the terms of GNU/GPL v3, for more information please read the file LICENSE
-Parts of GalagaMEGA65 are licensed under other Free-software licenses as described in the source code
+SEGASYS1MEGA65 is licensed under the terms of GNU/GPL v3, for more information please read the file LICENSE
+Parts of SEGASYS1MEGA65 are licensed under other Free-software licenses as described in the source code
 
-BosconianMEGA65:
+SEGASYS1MEGA65:
 ----------------
-
-  BosconianMEGA65 is a port of Arcade-Bosconian_MiSTer
+  SEGASYS1MEGA65 is a port of Arcade-SEGASYS1_MiSTer
       done by the MiSTer Development Team
-      Original GitHub Repository: https://github.com/MiSTer-devel/Arcade-Bosconian_MiSTer
+      Original GitHub Repository: https://github.com/MiSTer-devel/Arcade-SEGASYS1_MiSTer
       Contributors:
-      * NolanNicholson
+      * MrX-8B, sorgelig, JimmyStones, misteraddons, MikeS11, mcbazface, theypsilon, birdybro, dshadoff, alanswx
 
-Other than that and my own work, BosconianMEGA65 uses:
+Other than that and my own work, SEGASYS1MEGA65 uses:
 ---------------------------------------------------
 
   * MiSTer2MEGA65 by The MiSTer2MEGA65 Development Team
