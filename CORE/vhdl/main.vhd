@@ -22,7 +22,6 @@ entity main is
       reset_soft_i            : in  std_logic;
       reset_hard_i            : in  std_logic;
       pause_i                 : in  std_logic;
-      dim_video_o             : out std_logic;
 
       -- MiSTer core main clock speed:
       -- Make sure you pass very exact numbers here, because they are used for avoiding clock drift at derived clocks
@@ -75,7 +74,7 @@ entity main is
       dn_wr_i                 : in  std_logic;
 
       
-      osm_control_i      : in  std_logic_vector(255 downto 0)
+      osm_control_i           : in  std_logic_vector(255 downto 0)
       
    );
 end entity main;
@@ -128,10 +127,8 @@ constant m65_d             : integer := 18; --Service Mode
 constant m65_help          : integer := 67; --Help key
 
 -- Menu controls
-
-constant C_MENU_OSMPAUSE     : natural := 2;
-constant C_MENU_OSMDIM       : natural := 3;
-constant C_MENU_FLIP         : natural := 9;
+constant C_MENU_OSMPAUSE   : natural := 2;
+constant C_MENU_FLIP       : natural := 3;
 
 constant C_MENU_SEGAWB_H1  : integer := 32;
 constant C_MENU_SEGAWB_H2  : integer := 33;
@@ -150,9 +147,6 @@ signal oRGB                : std_logic_vector(7 downto 0);
 signal HOFFS               : std_logic_vector(4 downto 0);
 signal VOFFS               : std_logic_vector(2 downto 0);
 
--- pause related logic
-signal dim_video           : std_logic := '0';
-
 
 begin
    
@@ -162,7 +156,6 @@ begin
     audio_right_o(14 downto 0) <= signed(audio(14 downto 0));
    
     options(0)  <= osm_control_i(C_MENU_OSMPAUSE);
-    options(1)  <= osm_control_i(C_MENU_OSMDIM);
     flip_screen <= osm_control_i(C_MENU_FLIP);
 
     -- video

@@ -209,7 +209,6 @@ constant C_MENU_SEGAWB_DSWB_7 : natural := 68;
 
 -- Wonderboy specific video processing
 signal div          : std_logic_vector(2 downto 0);
-signal dim_video    : std_logic;
 signal dsw_a_i      : std_logic_vector(7 downto 0);
 signal dsw_b_i      : std_logic_vector(7 downto 0);
 
@@ -302,7 +301,6 @@ begin
          reset_soft_i         => main_reset_core_i,
          reset_hard_i         => main_reset_m2m_i,
          pause_i              => main_pause_core_i and main_osm_control_i(C_MENU_OSMPAUSE),
-         dim_video_o          => dim_video,
          clk_main_speed_i     => CORE_CLK_SPEED,
          
          -- Video output
