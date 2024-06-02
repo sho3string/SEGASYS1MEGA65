@@ -1,7 +1,6 @@
 
 $WorkingDirectory = Get-Location
-$outputFile = "/arcade/wboy/wbcfg"
-$length3 = 73
+$length = 73
 
 $XORTable = @(0x04, 0x54, 0x51, 0x15, 0x40, 0x44, 0x01, 0x51,
               0x55, 0x10, 0x44, 0x41, 0x05, 0x55, 0x50, 0x14,
@@ -79,15 +78,14 @@ $SWPTable = @(0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x02,
 	$swpPath = [System.IO.Path]::Combine($WorkingDirectory, "arcade", "wboy", "swptable.bin")
 	[System.IO.File]::WriteAllBytes($swpPath, $swpBytes)
 	
-	
-	Write-Output "Generate config file"
-	$null | Out-File -FilePath $WorkingDirectory"/arcade/wboy/temp.txt"
-	1..$length3 | ForEach-Object {
-		Add-Content -Path "temp.txt" -Value "ff"
+	$bytes = New-Object byte[] $length
+	for ($i = 0; $i -lt $bytes.Length; $i++) {
+	$bytes[$i] = 0xFF
 	}
-	
-	certutil.exe -f -decodehex temp.txt $WorkingDirectory$outputFile > $null
-	Remove-Item -Path $WorkingDirectory"/arcade/wboy/temp.txt"
+
+	$output_file = Join-Path -Path $WorkingDirectory -ChildPath "arcade\wboy\wbcfg"
+	$output_directory = [System.IO.Path]::GetDirectoryName($output_file)
+	[System.IO.File]::WriteAllBytes($output_file, $bytes)
 
 	Write-Output "All done!"
 	
