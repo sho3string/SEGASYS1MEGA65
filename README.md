@@ -8,7 +8,7 @@ This core is based on the
 SEGASYS1 core which itself is based on the work of [many others](AUTHORS).
 
 [Muse aka sho3string](https://github.com/sho3string)
-ported the core to the MEGA65 in 2023.
+ported the core to the MEGA65 in 2024.
 
 The core uses the [MiSTer2MEGA65](https://github.com/sy2002/MiSTer2MEGA65)
 framework and [QNICE-FPGA](https://github.com/sy2002/QNICE-FPGA) for
@@ -18,12 +18,18 @@ on-screen-menu.
 How to install Wonderboy on your MEGA65
 ---------------------------------------
 
+Download from here - [Download link #1](https://github.com/sho3string/SEGASYS1MEGA65/releases/download/v0.5.0/WonderboyMEGA65_r3_r6.zip) or [Download link #2](https://files.mega65.org?id=7365cb17-4375-45d3-a833-a89a38266c5e)
+
+See [this site](https://sy2002.github.io/m65cores/) to understand how to install and run the core on your MEGA65.  
+
+This core supports R3 and R6 revision boards, the zip file contains the approproiate .bit and .cor files for these revisions.  
+
 Download ROM: Download the MAME ROM ZIP file ( wboy.zip [set 1] )  
 Download the powershell or shell script depending on your preferred platform ( Windows, Linux/Unix and MacOS supported ).  
 
-The install scripts are provided on the Github main page.
+The install scripts are provided on the Github main page and in the WonderboyMEGA65_r3_r6.zip file.
 
-Run the script:
+Run the script:  
 a) First extract all the files within the zip to any working folder.  
 b) Copy the powershell or shell script to the same folder and execute it to create the following files.  
 
@@ -51,4 +57,5 @@ For a description of DIPs see the following page.
 https://www.arcade-museum.com/dipswitch-settings/wonder-boy
 
 This core has the potential to run other games on Sega System1 hardware, for now only Wonderboy is supported and tested.
-    
+
+
