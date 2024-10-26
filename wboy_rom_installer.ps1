@@ -48,24 +48,24 @@ $SWPTable = @(0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x01, 0x01, 0x01, 0x02,
 	cmd /c copy /b epr-7489.116+epr-7490.109 $WorkingDirectory"/arcade/wboy/rom1.bin"
 	
 	Write-Output "Copying non encrypted data"
-	cmd /c copy /b epr-7491.96 $WorkingDirectory"/arcade/wboy/"
+	cmd /c copy /b epr-7491.96 $WorkingDirectory"\arcade/wboy\"
 	
 	Write-Output "Copying sound ROMs"
-	cmd /c copy /b epr-7498.120 $WorkingDirectory"/arcade/wboy/"
+	cmd /c copy /b epr-7498.120 $WorkingDirectory"\arcade/wboy\"
 	
 	Write-Output "Copying tile ROMs"
-	cmd /c copy /b epr-7497.62 $WorkingDirectory"/arcade/wboy/"
-	cmd /c copy /b epr-7495.64 $WorkingDirectory"/arcade/wboy/"
-	cmd /c copy /b epr-7493.66 $WorkingDirectory"/arcade/wboy/"
-	cmd /c copy /b epr-7496.61 $WorkingDirectory"/arcade/wboy/"
-	cmd /c copy /b epr-7494.63 $WorkingDirectory"/arcade/wboy/"
-	cmd /c copy /b epr-7492.65 $WorkingDirectory"/arcade/wboy/"
+	cmd /c copy /b epr-7497.62 $WorkingDirectory"\arcade/wboy\"
+	cmd /c copy /b epr-7495.64 $WorkingDirectory"\arcade/wboy\"
+	cmd /c copy /b epr-7493.66 $WorkingDirectory"\arcade/wboy\"
+	cmd /c copy /b epr-7496.61 $WorkingDirectory"\arcade/wboy\"
+	cmd /c copy /b epr-7494.63 $WorkingDirectory"\arcade/wboy\"
+	cmd /c copy /b epr-7492.65 $WorkingDirectory"\arcade/wboy\"
 	
 	Write-Output "Combining sprite ROMs"
-	cmd /c copy /b epr-7485.117+epr-7487.04+epr-7486.110+epr-7488.05 $WorkingDirectory"/arcade/wboy/sprites.bin"
+	cmd /c copy /b epr-7485.117+epr-7487.04+epr-7486.110+epr-7488.05 $WorkingDirectory"\arcade\wboy\sprites.bin"
 	
 	Write-Output "Copying lookup PROM"
-	cmd /c copy /b pr-5317.76 $WorkingDirectory"/arcade/wboy/"
+	cmd /c copy /b pr-5317.76 $WorkingDirectory"\arcade\wboy\"
 	
 	Write-Output "Dumping XOR table"
 	$xorBytes = [System.Byte[]]$XORTable
