@@ -76,7 +76,7 @@ type WHS_RECORD_ARRAY_TYPE is array (0 to WHS_RECORDS - 1) of WHS_RECORD_TYPE;
 
 constant SCR_WELCOME : string :=
 
-   "Wonderboy V0.5.0 (beta)\n" &
+   "Up'n Down V0.5.0 (beta)\n" &
    "-----------------------\n" &
    "\n" &
    "MiSTer port done by Muse in 2024\n\n" &
@@ -89,7 +89,6 @@ constant SCR_WELCOME : string :=
    "Start    : Press '1' or '2'\n"        &
    "Controls : Joy 1 - left & right\n"    &
    "Jump     : Left shift\n"              &
-   "Fire/run : Mega key\n"                &
    "Svc 1    : Press 's' \n"              &
    "Svc Mode : Press 'd' \n"              &
    "\n\n    Press Space to continue.\n"; 
@@ -186,8 +185,8 @@ constant SEL_CFG_FILE      : std_logic_vector(15 downto 0) := x"0101";
 
 -- START YOUR CONFIGURATION BELOW THIS LINE
 
-constant DIR_START         : string := "/arcade/wboy";
-constant CFG_FILE          : string := "/arcade/wboy/wbcfg";
+constant DIR_START         : string := "/arcade/upndown";
+constant CFG_FILE          : string := "/arcade/upndown/udcfg";
 
 --------------------------------------------------------------------------------------------------------------------
 -- General configuration settings: Reset, Pause, OSD behavior, Ascal, etc. (Selector 0x0110)
@@ -269,7 +268,7 @@ constant SEL_CORENAME      : std_logic_vector(15 downto 0) := x"0200";
 
 -- Currently this is only used in the debug console. Use the welcome screen and the
 -- help system to display the name and version of the Wonderboy core to the end user
-constant CORENAME          : string := "Wonderboy V1";
+constant CORENAME          : string := "Up'n Down V1";
 
 --------------------------------------------------------------------------------------------------------------------
 -- "Help" menu / Options menu  (Selectors 0x0300 .. 0x0312): DO NOT TOUCH
@@ -321,7 +320,7 @@ constant OPTM_S_SAVING     : string := "<Saving>";          -- the internal writ
 --             Do use a lower case \n. If you forget one of them or if you use upper case, you will run into undefined behavior.
 --          2. Start each line that contains an actual menu item (multi- or single-select) with a Space character,
 --             otherwise you will experience visual glitches.
-constant OPTM_SIZE         : natural := 73;  -- amount of items including empty lines:
+constant OPTM_SIZE         : natural := 74;  -- amount of items including empty lines:
                                              -- needs to be equal to the number of lines in OPTM_ITEMS and amount of items in OPTM_GROUPS
                                              -- IMPORTANT: If SAVE_SETTINGS is true and OPTM_SIZE changes: Make sure to re-generate and
                                              -- and re-distribute the config file. You can make a new one using M2M/tools/make_config.sh
@@ -329,13 +328,14 @@ constant OPTM_SIZE         : natural := 73;  -- amount of items including empty 
 -- Net size of the Options menu on the screen in characters (excluding the frame, which is hardcoded to two characters)
 -- Without submenus: Use OPTM_SIZE as height, otherwise count how large the actually visible main menu is.
 constant OPTM_DX           : natural := 23;
-constant OPTM_DY           : natural := 21;
+constant OPTM_DY           : natural := 20;
 
 constant OPTM_ITEMS        : string :=
-   " Wonderboy - set 1\n"   &
+   " Up'n Down\n"           &
    "\n"                     &
    " Pause when OSD open\n" &
    " Flip joystick ports\n" &
+   " Screen Rotate 90\n"    &
    "\n"                     &
    " Display Settings\n"    &
    "\n"                     &
@@ -399,8 +399,8 @@ constant OPTM_ITEMS        : string :=
    " B3 - Lives\n"          &
    " B4 - Bonus Life\n"     &
    " B5 - Continue\n"       &
-   " B6 - Difficulty\n"     &
-   " B7 - Unused\n"         &
+   " B6 - Difficulty A\n"   &
+   " B7 - Difficulty B\n"   &
    "\n"                     &
    " Back to main menu\n"   &
    "\n"                     &
@@ -457,6 +457,7 @@ constant OPTM_GROUPS       : OPTM_GTYPE := ( OPTM_G_TEXT + OPTM_G_HEADLINE,     
                                              OPTM_G_LINE,                                               -- Line
                                              OPTM_G_OSDO + OPTM_G_SINGLESEL + OPTM_G_START + OPTM_G_STDSEL,   -- Pause when OSD is open
                                              OPTM_G_FLIPJ + OPTM_G_SINGLESEL,                           -- Flip joys On/Off toggle ("Single Select")
+                                             OPTM_G_ROT90 + OPTM_G_SINGLESEL + OPTM_G_STDSEL,           -- Rotate On/Off toggle ("Single Select")
                                              OPTM_G_LINE,                                               -- Line
                                              OPTM_G_TEXT + OPTM_G_HEADLINE,                             -- Headline "HDMI Mode""
                                              OPTM_G_LINE,                                               -- Line

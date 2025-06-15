@@ -177,35 +177,36 @@ signal main_video_vblank   : std_logic;
 
 constant C_MENU_OSMPAUSE      : natural := 2;  
 constant C_FLIP_JOYS          : natural := 3;
-constant C_MENU_CRT_EMULATION : natural := 7;
-constant C_MENU_HDMI_16_9_50  : natural := 11;
-constant C_MENU_HDMI_16_9_60  : natural := 12;
-constant C_MENU_HDMI_4_3_50   : natural := 13;
-constant C_MENU_HDMI_5_4_50   : natural := 14;
+constant C_MENU_ROT90         : natural := 4;
+constant C_MENU_CRT_EMULATION : natural := 8;
+constant C_MENU_HDMI_16_9_50  : natural := 12;
+constant C_MENU_HDMI_16_9_60  : natural := 13;
+constant C_MENU_HDMI_4_3_50   : natural := 14;
+constant C_MENU_HDMI_5_4_50   : natural := 15;
 
-constant C_MENU_VGA_STD       : natural := 20;
-constant C_MENU_VGA_15KHZHSVS : natural := 24;
-constant C_MENU_VGA_15KHZCS   : natural := 25;
+constant C_MENU_VGA_STD       : natural := 21;
+constant C_MENU_VGA_15KHZHSVS : natural := 25;
+constant C_MENU_VGA_15KHZCS   : natural := 26;
 
 -- SEGA DIPs
 -- Dipswitch A
-constant C_MENU_SEGAWB_DSWA_0 : natural := 52;
-constant C_MENU_SEGAWB_DSWA_1 : natural := 53;
-constant C_MENU_SEGAWB_DSWA_2 : natural := 54;
-constant C_MENU_SEGAWB_DSWA_3 : natural := 55;
-constant C_MENU_SEGAWB_DSWA_4 : natural := 56;
-constant C_MENU_SEGAWB_DSWA_5 : natural := 57;
-constant C_MENU_SEGAWB_DSWA_6 : natural := 58;
-constant C_MENU_SEGAWB_DSWA_7 : natural := 59;
+constant C_MENU_SEGAWB_DSWA_0 : natural := 53;
+constant C_MENU_SEGAWB_DSWA_1 : natural := 54;
+constant C_MENU_SEGAWB_DSWA_2 : natural := 55;
+constant C_MENU_SEGAWB_DSWA_3 : natural := 56;
+constant C_MENU_SEGAWB_DSWA_4 : natural := 57;
+constant C_MENU_SEGAWB_DSWA_5 : natural := 58;
+constant C_MENU_SEGAWB_DSWA_6 : natural := 59;
+constant C_MENU_SEGAWB_DSWA_7 : natural := 60;
 -- Dipswitch B 
-constant C_MENU_SEGAWB_DSWB_0 : natural := 61;
-constant C_MENU_SEGAWB_DSWB_1 : natural := 62;
-constant C_MENU_SEGAWB_DSWB_2 : natural := 63;
-constant C_MENU_SEGAWB_DSWB_3 : natural := 64;
-constant C_MENU_SEGAWB_DSWB_4 : natural := 65;
-constant C_MENU_SEGAWB_DSWB_5 : natural := 66;
-constant C_MENU_SEGAWB_DSWB_6 : natural := 67;
-constant C_MENU_SEGAWB_DSWB_7 : natural := 68;
+constant C_MENU_SEGAWB_DSWB_0 : natural := 62;
+constant C_MENU_SEGAWB_DSWB_1 : natural := 63;
+constant C_MENU_SEGAWB_DSWB_2 : natural := 64;
+constant C_MENU_SEGAWB_DSWB_3 : natural := 65;
+constant C_MENU_SEGAWB_DSWB_4 : natural := 66;
+constant C_MENU_SEGAWB_DSWB_5 : natural := 67;
+constant C_MENU_SEGAWB_DSWB_6 : natural := 68;
+constant C_MENU_SEGAWB_DSWB_7 : natural := 69;
 
 -- Wonderboy specific video processing
 signal div          : std_logic_vector(2 downto 0);
@@ -213,6 +214,8 @@ signal dsw_a_i      : std_logic_vector(7 downto 0);
 signal dsw_b_i      : std_logic_vector(7 downto 0);
 
 signal old_clk      : std_logic;
+signal ce_vid       : std_logic;
+signal ce_pix       : std_logic;
 signal video_red    : std_logic_vector(7 downto 0);
 signal video_green  : std_logic_vector(7 downto 0);
 signal video_blue   : std_logic_vector(7 downto 0);
@@ -221,6 +224,17 @@ signal video_hs     : std_logic;
 signal video_vblank : std_logic;
 signal video_hblank : std_logic;
 signal video_de     : std_logic;
+
+signal video_rot_red    : std_logic_vector(7 downto 0);
+signal video_rot_green  : std_logic_vector(7 downto 0);
+signal video_rot_blue   : std_logic_vector(7 downto 0);
+signal video_rot_vs     : std_logic;
+signal video_rot_hs     : std_logic;
+signal video_rot_vblank : std_logic;
+signal video_rot_hblank : std_logic;
+signal video_rot_de     : std_logic;
+
+signal video_rot90_flag : std_logic;
 
 -- Output from screen_rotate
 signal ddram_addr       : std_logic_vector(28 downto 0);
@@ -232,6 +246,26 @@ signal ddram_we         : std_logic;
 signal qnice_dn_addr    : std_logic_vector(17 downto 0);
 signal qnice_dn_data    : std_logic_vector(7 downto 0);
 signal qnice_dn_wr      : std_logic;
+
+
+-- 320x288 @ 50 Hz
+constant C_320_288_50 : video_modes_t := (
+   CLK_KHZ     => 6050,       -- 6 MHz
+   CEA_CTA_VIC => 0,
+   ASPECT      => "01",       -- aspect ratio: 01=4:3, 10=16:9: "01" for SVGA
+   PIXEL_REP   => '0',        -- no pixel repetition
+   H_PIXELS    => 320,        -- horizontal display width in pixels
+   V_PIXELS    => 256,        -- vertical display width in rows
+   H_PULSE     => 28,         -- horizontal sync pulse width in pixels
+   H_BP        => 28,         -- horizontal back porch width in pixels
+   H_FP        => 8,          -- horizontal front porch width in pixels
+   V_PULSE     => 2,          -- vertical sync pulse width in rows
+   V_BP        => 22,         -- vertical back porch width in rows
+   V_FP        => 1,          -- vertical front porch width in rows
+   H_POL       => '1',        -- horizontal sync pulse polarity (1 = positive, 0 = negative)
+   V_POL       => '1'         -- vertical sync pulse polarity (1 = positive, 0 = negative)
+);
+
 
 
 begin
@@ -254,19 +288,22 @@ begin
       
       ); 
       
+    i_cdc_qnice2video : xpm_cdc_array_single
+      generic map (
+         WIDTH => 1
+      )
+      port map (
+         src_clk           => qnice_clk_i,
+         src_in(0)         => qnice_osm_control_i(C_MENU_ROT90),
+         dest_clk          => main_clk,
+         dest_out(0)       => video_rot90_flag
+      ); -- i_cdc_qnice2video
+      
  
    main_clk_o       <= main_clk;
    main_rst_o       <= main_rst;
    video_clk_o      <= main_clk;
    video_rst_o      <= main_rst;
-   
-   video_red_o      <= video_red;
-   video_green_o    <= video_green;
-   video_blue_o     <= video_blue;
-   video_vs_o       <= video_vs;
-   video_hs_o       <= video_hs;
-   video_hblank_o   <= video_hblank;
-   video_vblank_o   <= video_vblank;      
    
    dsw_a_i <= main_osm_control_i(C_MENU_SEGAWB_DSWA_7) &
               main_osm_control_i(C_MENU_SEGAWB_DSWA_6) &
@@ -305,7 +342,7 @@ begin
          
          -- Video output
          -- This is PAL 720x576 @ 50 Hz (pixel clock 27 MHz), but synchronized to main_clk (54 MHz).
-         video_ce_o           => video_ce_o,
+         video_ce_o           => ce_vid,
          video_ce_ovl_o       => open,
          video_red_o          => main_video_red,
          video_green_o        => main_video_green,
@@ -352,6 +389,9 @@ begin
     process (main_clk) -- 48.4 MHz
     begin
         if rising_edge(main_clk) then
+        
+            old_clk <= ce_vid;
+            ce_pix  <= old_clk and (not ce_vid); -- 6.05 Mhz pixel clock
 
             video_ce_ovl_o <= '0';
             
@@ -372,45 +412,86 @@ begin
         end if;
     end process;
     
+    p_select_video_signals : process(video_rot90_flag)
+    begin
+        if video_rot90_flag then
+           video_red_o      <= video_rot_red;
+           video_green_o    <= video_rot_green;
+           video_blue_o     <= video_rot_blue;
+           video_vs_o       <= video_rot_vs;
+           video_hs_o       <= video_rot_hs;
+           video_hblank_o   <= video_rot_hblank;
+           video_vblank_o   <= video_rot_vblank;
+           video_ce_o       <= ce_pix;
+       else
+           video_red_o      <= video_red;
+           video_green_o    <= video_green;
+           video_blue_o     <= video_blue;
+           video_vs_o       <= video_vs;
+           video_hs_o       <= video_hs;
+           video_hblank_o   <= video_hblank;
+           video_vblank_o   <= video_vblank;
+           video_ce_o       <= ce_pix; 
+       end if;
+    end process;
+    
+    i_screen_rotate : entity work.screen_rotate
+       port map (
+          --inputs
+          CLK_VIDEO      => main_clk,
+          CE_PIXEL       => ce_pix,
+          VGA_R          => video_red,
+          VGA_G          => video_green,
+          VGA_B          => video_blue,
+          VGA_HS         => video_hs,
+          VGA_VS         => video_vs,
+          VGA_DE         => video_de,
+          rotate_ccw     => '1',
+          no_rotate      => '0',
+          flip           => '1',
+          FB_VBL         => '0',
+          FB_LL          => '0',
+          -- output to screen_buffer
+          video_rotated  => open,
+          DDRAM_CLK      => main_clk,
+          DDRAM_BUSY     => '0',
+          DDRAM_BURSTCNT => open,
+          DDRAM_ADDR     => ddram_addr,
+          DDRAM_DIN      => ddram_data,
+          DDRAM_BE       => ddram_be,
+          DDRAM_WE       => ddram_we,
+          DDRAM_RD       => open
+      ); -- i_screen_rotate
+    
         
     
-    -- The video output from the core has the following (empirically determined)
-    -- parameters:
-    -- CLK_KHZ     => 6000,       -- 6 MHz
-    -- H_PIXELS    => 288,        -- horizontal display width in pixels
-    -- V_PIXELS    => 224,        -- vertical display width in rows
-    -- H_PULSE     => 29,         -- horizontal sync pulse width in pixels
-    -- H_BP        => 44,         -- horizontal back porch width in pixels
-    -- H_FP        => 23,         -- horizontal front porch width in pixels
-    -- V_PULSE     => 8,          -- vertical sync pulse width in rows
-    -- V_BP        => 12,         -- vertical back porch width in rows
-    -- V_FP        => 20,         -- vertical front porch width in rows
-    -- This corresponds to a horizontal sync frequency of 15.625 kHz
-    -- and a vertical sync frequency of 59.19 Hz.
-    --
-    -- After screen rotation the visible part therefore has a size of 224x288 pixels.
-    -- In order to display this image we need a screen resolution that is large enough.
-    -- I've chosen a down-scaled version of the standard 576p. The important values here
-    -- are the horizontal sync frequency of 15.625 kHz and the fact that I'm keeping
-    -- the pixel clock rate of 6 MHz.
-    -- The calculation is as follows: The standard 576p has the following parameters:
-    -- (see M2M/vhdl/av_pipeline/video_modes_pkg.vhd):
-    -- * pixel clock rate of 27 MHz.
-    -- * horizontal sync frequency of 31.25 kHz.
-    -- * horizontal scan line time of 1000/31.25 = 32 us.
-    -- * horizontal visible pixels 720.
-    -- * horizontal visible time 720/27 = 26.67 us.
-    -- In a non-scandoubled domain the numbers change as follows:
-    -- * horizontal sync frequency of 31.25/2 = 15.625 kHz.
-    -- * horizontal scan line time of 32*2 = 64 us.
-    -- * horizontal visible time 26.67*2 = 53.33 us.
-    -- Since we are sticking with a 6 MHz pixel rate, we get:
-    -- * horizontal visible pixels 53.33*6 = 320.
-    -- Therefore, we have a visible screen area of 320x288 pixels, and our rotated image
-    -- of 224x288 must be centered in here. This leaves a border of (320-224)/2 = 48
-    -- pixels on either side.
-    -- Nevertheless, on my VGA monitor, this video signal is recognized as
-    -- 720x288 @ 50Hz.
+           -- Here G_ADDR_WIDTH is determined by the total number of visible pixels,
+   -- since each word in memory stores one pixel.
+   -- Here we have 288*224 = 64512, i.e. 16 bits of address is enough.
+   i_frame_buffer : entity work.frame_buffer
+      generic map (
+         G_ADDR_WIDTH => 16,
+         G_H_LEFT     => 48,
+         G_H_RIGHT    => 224+48,    -- ( 320- 24 ) / 2 = 48
+         G_VIDEO_MODE => C_320_288_50
+      )
+      
+      port map (
+         ddram_clk_i      => main_clk,
+         ddram_addr_i     => ddram_addr(14 downto 0) & ddram_be(7),
+         ddram_din_i      => ddram_data(31 downto 0),
+         ddram_we_i       => ddram_we,
+         video_clk_i      => main_clk,
+         video_ce_i       => ce_pix,
+         video_red_o      => video_rot_red,
+         video_green_o    => video_rot_green,
+         video_blue_o     => video_rot_blue,
+         video_vs_o       => video_rot_vs,
+         video_hs_o       => video_rot_hs,
+         video_hblank_o   => video_rot_hblank,
+         video_vblank_o   => video_rot_vblank
+      ); -- i_frame_buffer
+
    
   
    ---------------------------------------------------------------------------------------------
@@ -548,10 +629,10 @@ begin
               qnice_dn_addr <= "10110000010" & qnice_dev_addr_i(6 downto 0); 
               qnice_dn_data <= qnice_dev_data_i(7 downto 0);   
               
-         when C_DEV_WB_STBL =>
-              qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
-              qnice_dn_addr <= "10110000011" & qnice_dev_addr_i(6 downto 0); 
-              qnice_dn_data <= qnice_dev_data_i(7 downto 0);
+         --when C_DEV_WB_STBL =>
+         --     qnice_dn_wr   <= qnice_dev_ce_i and qnice_dev_we_i;
+         --     qnice_dn_addr <= "10110000011" & qnice_dev_addr_i(6 downto 0); 
+         --     qnice_dn_data <= qnice_dev_data_i(7 downto 0);
         
          when others => null;
       end case;
