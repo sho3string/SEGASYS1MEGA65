@@ -154,24 +154,24 @@ constant C_DEV_WB_TIL5               : std_logic_vector(15 downto 0) := x"0109";
 constant C_DEV_WB_TIL6               : std_logic_vector(15 downto 0) := x"010A";     -- TILES 6
 constant C_DEV_WB_PROM               : std_logic_vector(15 downto 0) := x"010B";     -- PROMS
 constant C_DEV_WB_XTBL               : std_logic_vector(15 downto 0) := x"010C";     -- XOR TABLE
---constant C_DEV_WB_STBL               : std_logic_vector(15 downto 0) := x"010D";     -- SWAP TABLE
+constant C_DEV_WB_STBL               : std_logic_vector(15 downto 0) := x"010D";     -- SWAP TABLE
 
 
 
-constant ROM1_MAIN1_CPU_ROM           : string  := "arcade/upndown/rom1.bin" & ENDSTR;       -- z80 cpu 32kb -- encrypted
-constant ROM2_MAIN2_CPU_ROM           : string  := "arcade/upndown/rom2.bin"  & ENDSTR;      -- z80 cpu 16kb -- non encrypted
-constant ROM1_SND_CPU_ROM             : string  := "arcade/upndown/epr-5535.3" & ENDSTR;     -- z80 snd cpu
-constant ROM1_SND_CPU_ROM_1           : string  := "arcade/upndown/epr-5535.3" & ENDSTR;     -- z80 snd cpu
-constant SPR_01_ROM                   : string  := "arcade/upndown/sprites.bin" & ENDSTR;    -- sprites 64kb
-constant TILE_01_ROM                  : string  := "arcade/upndown/epr-5527.82" & ENDSTR;    -- tiles
-constant TILE_02_ROM                  : string  := "arcade/upndown/epr-5525.81" & ENDSTR;    -- tiles
-constant TILE_03_ROM                  : string  := "arcade/upndown/epr-5523.80" & ENDSTR;    -- tiles
-constant TILE_04_ROM                  : string  := "arcade/upndown/epr-5526.65" & ENDSTR;    -- tiles
-constant TILE_05_ROM                  : string  := "arcade/upndown/epr-5524.64" & ENDSTR;    -- tiles
-constant TILE_06_ROM                  : string  := "arcade/upndown/epr-5522.63" & ENDSTR;    -- tiles
-constant LOOKUP_PROM                  : string  := "arcade/upndown/pr-5317.106" & ENDSTR;     -- lookup proms
-constant XOR_TABLE                    : string  := "arcade/upndown/xortable.bin" & ENDSTR;   -- xor table    -- 128 bytes
---constant SWP_TABLE                    : string  := "arcade/upndown/swptable.bin" & ENDSTR;   -- swap table   -- 128 bytes
+constant ROM1_MAIN1_CPU_ROM           : string  := "arcade/wboy/rom1.bin" & ENDSTR;       -- z80 cpu 32kb -- encrypted
+constant ROM2_MAIN2_CPU_ROM           : string  := "arcade/wboy/epr-7491.96"  & ENDSTR;   -- z80 cpu 16kb -- non encrypted
+constant ROM1_SND_CPU_ROM             : string  := "arcade/wboy/epr-7498.120" & ENDSTR;   -- z80 snd cpu
+constant ROM1_SND_CPU_ROM_1           : string  := "arcade/wboy/epr-7498.120" & ENDSTR;   -- z80 snd cpu
+constant SPR_01_ROM                   : string  := "arcade/wboy/sprites.bin" & ENDSTR;    -- sprites 64kb
+constant TILE_01_ROM                  : string  := "arcade/wboy/epr-7497.62" & ENDSTR;    -- tiles
+constant TILE_02_ROM                  : string  := "arcade/wboy/epr-7495.64" & ENDSTR;    -- tiles
+constant TILE_03_ROM                  : string  := "arcade/wboy/epr-7493.66" & ENDSTR;    -- tiles
+constant TILE_04_ROM                  : string  := "arcade/wboy/epr-7496.61" & ENDSTR;    -- tiles
+constant TILE_05_ROM                  : string  := "arcade/wboy/epr-7494.63" & ENDSTR;    -- tiles
+constant TILE_06_ROM                  : string  := "arcade/wboy/epr-7492.65" & ENDSTR;    -- tiles
+constant LOOKUP_PROM                  : string  := "arcade/wboy/pr-5317.76" & ENDSTR;     -- lookup proms
+constant XOR_TABLE                    : string  := "arcade/wboy/xortable.bin" & ENDSTR;   -- xor table    -- 128 bytes
+constant SWP_TABLE                    : string  := "arcade/wboy/swptable.bin" & ENDSTR;   -- swap table   -- 128 bytes
 
 
 constant CPU_ROM1_MAIN_START          : std_logic_vector(15 downto 0) := X"0000";
@@ -187,17 +187,17 @@ constant TILE5_MAIN_START             : std_logic_vector(15 downto 0) := TILE4_M
 constant TILE6_MAIN_START             : std_logic_vector(15 downto 0) := TILE5_MAIN_START    + TILE_05_ROM'length;
 constant LOOKUP_MAIN_START            : std_logic_vector(15 downto 0) := TILE6_MAIN_START    + TILE_06_ROM'length;
 constant XOR_MAIN_START               : std_logic_vector(15 downto 0) := LOOKUP_MAIN_START   + LOOKUP_PROM'length;
---constant SWP_MAIN_START               : std_logic_vector(15 downto 0) := XOR_MAIN_START      + XOR_TABLE'length;
+constant SWP_MAIN_START               : std_logic_vector(15 downto 0) := XOR_MAIN_START      + XOR_TABLE'length;
 
 
 -- M2M framework constants
-constant C_CRTROMS_AUTO_NUM      : natural := 13; -- Amount of automatically loadable ROMs and carts, if more than 3: also adjust CRTROM_MAN_MAX in M2M/rom/shell_vars.asm, Needs to be in sync with config.vhd. Maximum is 16
+constant C_CRTROMS_AUTO_NUM      : natural := 14; -- Amount of automatically loadable ROMs and carts, if more than 3: also adjust CRTROM_MAN_MAX in M2M/rom/shell_vars.asm, Needs to be in sync with config.vhd. Maximum is 16
 constant C_CRTROMS_AUTO_NAMES    : string  := ROM1_MAIN1_CPU_ROM & ROM2_MAIN2_CPU_ROM &
                                               ROM1_SND_CPU_ROM & ROM1_SND_CPU_ROM_1 &
                                               SPR_01_ROM &
                                               TILE_01_ROM & TILE_02_ROM & TILE_03_ROM & TILE_04_ROM & TILE_05_ROM & TILE_06_ROM &
                                               LOOKUP_PROM &
-                                              XOR_TABLE & --SWP_TABLE &
+                                              XOR_TABLE & SWP_TABLE &
                                               ENDSTR;
                                               
 constant C_CRTROMS_AUTO          : crtrom_buf_array := ( 
@@ -213,8 +213,8 @@ constant C_CRTROMS_AUTO          : crtrom_buf_array := (
       C_CRTROMTYPE_DEVICE, C_DEV_WB_TIL5,     C_CRTROMTYPE_MANDATORY, TILE5_MAIN_START,
       C_CRTROMTYPE_DEVICE, C_DEV_WB_TIL6,     C_CRTROMTYPE_MANDATORY, TILE6_MAIN_START,
       C_CRTROMTYPE_DEVICE, C_DEV_WB_PROM,     C_CRTROMTYPE_MANDATORY, LOOKUP_MAIN_START,
-      C_CRTROMTYPE_DEVICE, C_DEV_WB_XTBL,     C_CRTROMTYPE_MANDATORY, XOR_MAIN_START,
-      --C_CRTROMTYPE_DEVICE, C_DEV_WB_STBL,     C_CRTROMTYPE_MANDATORY, SWP_MAIN_START,              
+      C_CRTROMTYPE_DEVICE, C_DEV_WB_XTBL,     C_CRTROMTYPE_MANDATORY, XOR_MAIN_START, 
+      C_CRTROMTYPE_DEVICE, C_DEV_WB_STBL,     C_CRTROMTYPE_MANDATORY, SWP_MAIN_START,              
                                                          x"EEEE");                     -- Always finish the array using x"EEEE"
 
 ----------------------------------------------------------------------------------------------------------

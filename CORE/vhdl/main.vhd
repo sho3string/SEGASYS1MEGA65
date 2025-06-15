@@ -200,20 +200,20 @@ begin
     
     INP0(7)    => keyboard_n(m65_left_crsr)  and joy_1_left_n_i, -- left
     INP0(6)    => keyboard_n(m65_horz_crsr)  and joy_1_right_n_i,-- right      
-    INP0(5)    => keyboard_n(m65_up_crsr)    and joy_1_up_n_i,   -- up        
-    INP0(4)    => keyboard_n(m65_vert_crsr)  and joy_1_down_n_i,  -- down  
+    INP0(5)    => keyboard_n(m65_up_crsr),                       -- up        
+    INP0(4)    => keyboard_n(m65_vert_crsr),                     -- down    
     INP0(3)    => '1',
-    INP0(2)    => keyboard_n(m65_left_shift) and joy_1_fire_n_i, -- trigger 2
-    INP0(1)    => keyboard_n(m65_mega),                          -- trigger 1   
+    INP0(2)    => keyboard_n(m65_left_shift) and joy_1_up_n_i,   -- trigger 2
+    INP0(1)    => keyboard_n(m65_mega)       and joy_1_fire_n_i, -- trigger 1   
     INP0(0)    => '1',                                           -- trigger 3
     
     INP1(7)    => keyboard_n(m65_left_crsr)  and joy_2_left_n_i,  -- left
     INP1(6)    => keyboard_n(m65_horz_crsr)  and joy_2_right_n_i, -- right      
-    INP1(5)    => keyboard_n(m65_up_crsr)    and joy_2_up_n_i,    -- up        
-    INP1(4)    => keyboard_n(m65_vert_crsr)  and joy_2_down_n_i,  -- down    
+    INP1(5)    => keyboard_n(m65_up_crsr),                        -- up        
+    INP1(4)    => keyboard_n(m65_vert_crsr),                      -- down    
     INP1(3)    => '1',
-    INP1(2)    => keyboard_n(m65_left_shift) and joy_2_fire_n_i,  -- trigger 2
-    INP1(1)    => keyboard_n(m65_mega),                           -- trigger 1   
+    INP1(2)    => keyboard_n(m65_left_shift) and joy_2_up_n_i,    -- trigger 2
+    INP1(1)    => keyboard_n(m65_mega)       and joy_2_fire_n_i,  -- trigger 1   
     INP1(0)    => '1',                                            -- trigger 3
    
     INP2(7)    => '1',                       -- unknown
