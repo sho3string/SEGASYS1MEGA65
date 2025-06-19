@@ -76,7 +76,7 @@ $XORTable = [byte[]](
 	Write-Host "XOR table dumped"
 
 	# Create empty UDCFG file (filled with 0xFF)
-	$length = 73
+	$length = 74
 	$emptyBytes = ,0xFF * $length
 	[System.IO.File]::WriteAllBytes((Join-Path $OutputPath "udcfg"), $emptyBytes)
 	Write-Host "Blank udcfg created"
